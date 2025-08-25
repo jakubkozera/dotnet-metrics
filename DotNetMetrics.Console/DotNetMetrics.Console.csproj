@@ -10,7 +10,7 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>dotnet-metrics</ToolCommandName>
     <PackageId>DotNetMetrics.Tool</PackageId>
-    <Version>1.0.8</Version>
+    <Version>1.0.9</Version>
     <Authors>Jakub Kozera</Authors>
     <Description>Real-time monitoring tool for .NET Core process metrics (CPU, Memory). Monitor any .NET process by PID and get JSON output with CPU usage, memory consumption, and performance metrics.</Description>
     <PackageTags>dotnet;metrics;monitoring;performance;cpu;memory;tool;diagnostics;process;real-time</PackageTags>

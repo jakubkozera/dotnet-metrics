@@ -9,96 +9,110 @@ Real-time monitoring tool for .NET Core process metrics. Monitor any .NET proces
 
 ## Features
 
-- Process monitoring based on PID
-- Real-time JSON metrics every second  
-- Comprehensive metrics including:
-  - CPU Usage (%)
-  - Memory Usage (MB)
-  - Working Set Memory (MB)
-  - Private Memory (MB)
-  - Timestamp and process information
-- Self-contained executables for all major platforms
-- No .NET Runtime installation required
+- 🔍 **Real-time monitoring** - Updates every second
+- 📊 **Comprehensive metrics** - CPU usage, memory consumption, working set, private memory
+- 📝 **JSON output** - Structured data perfect for logging and analysis
+- 💾 **File output** - Save metrics to file for continuous monitoring
+- 🚀 **Cross-platform** - Works on Windows, Linux, and macOS
+- ⚡ **Lightweight** - Minimal overhead on system resources
+- 🛠️ **Easy installation** - Install as a global .NET tool
 
-## Requirements
+## Installation
 
-- .NET 8.0 SDK (for building from source)
-- OR use pre-built self-contained executables
-- Appropriate permissions to read process information
-
-## Quick Start
-
-### Option 1: Use Pre-built Executables
-
-1. Download the appropriate executable for your platform from the `builds/` folder
-2. Run directly without any .NET installation:
+Install as a global .NET tool:
 
 ```bash
-# Windows
-.\builds\win-x64\DotNetMetrics.Console.exe 1234
-
-# Linux  
-./builds/linux-x64/DotNetMetrics.Console 1234
-
-# macOS
-./builds/osx-x64/DotNetMetrics.Console 1234
+dotnet tool install --global DotNetMetrics.Tool
 ```
 
-### Option 2: Build from Source
+## Usage
+
+### Basic monitoring (console output)
 
 ```bash
-# Clone and build
-git clone <repository-url>
-cd DotNetMetrics
-dotnet restore DotNetMetrics.Console
-dotnet build DotNetMetrics.Console
-
-# Run from source
-cd DotNetMetrics.Console
-dotnet run -- <PID>
+dotnet-metrics <PID>
 ```
 
-## Building Self-Contained Executables
+### Save to file (silent mode)
 
-### Build for Current Platform (Windows)
+```bash
+dotnet-metrics <PID> --out metrics.json
+dotnet-metrics <PID> -o /path/to/metrics.json
+```
+
+### Find process PID
+
+**Windows (PowerShell):**
 ```powershell
-.\build-windows.ps1
+Get-Process | Where-Object {$_.ProcessName -like '*your-app*'}
 ```
 
-### Build for All Platforms  
-```powershell
-.\build-all-platforms.ps1
+**Linux/macOS:**
+```bash
+ps aux | grep your-app
 ```
 
-### List Built Executables
-```powershell
-.\list-builds.ps1
+### Alternative (Command Prompt)
+
+```cmd
+tasklist | findstr "process_name"
 ```
 
-See [BUILD.md](BUILD.md) for detailed build instructions.
+### Task Manager
 
-## Available Platforms
+1. Open Task Manager (Ctrl+Shift+Esc)
+2. Go to "Details" tab
+3. Find your process and check the "PID" column
 
-| Platform | Executable | Size | 
-|----------|------------|------|
-| Windows x64 | `builds/win-x64/DotNetMetrics.Console.exe` | ~12 MB |
-| Windows x86 | `builds/win-x86/DotNetMetrics.Console.exe` | ~11 MB |
-| Windows ARM64 | `builds/win-arm64/DotNetMetrics.Console.exe` | ~12 MB |
-| Linux x64 | `builds/linux-x64/DotNetMetrics.Console` | ~13 MB |
-| Linux ARM64 | `builds/linux-arm64/DotNetMetrics.Console` | ~13 MB |
-| macOS x64 | `builds/osx-x64/DotNetMetrics.Console` | ~13 MB |
-| macOS ARM64 | `builds/osx-arm64/DotNetMetrics.Console` | ~13 MB |
+## Example Output
 
-## Użytkowanie
+```json
+{
+  "timestamp": "2025-08-25T10:30:45.123Z",
+  "processId": 1234,
+  "processName": "MyApp",
+  "cpuUsagePercent": 15.67,
+  "memoryUsageMB": 256.78,
+  "workingSetMB": 312.45,
+  "privateMemoryMB": 189.23
+}
+```
 
-### Opcja 1: Bezpośrednio przez .NET CLI
+## Metrics Explained
+
+- **timestamp** - ISO 8601 timestamp of the measurement
+- **processId** - Process ID being monitored
+- **processName** - Name of the process
+- **cpuUsagePercent** - CPU usage as percentage (0-100)
+- **memoryUsageMB** - Paged memory usage in megabytes
+- **workingSetMB** - Physical memory usage in megabytes
+- **privateMemoryMB** - Private memory usage in megabytes
+
+## Use Cases
+
+- **Performance monitoring** - Track application resource usage
+- **CI/CD pipelines** - Monitor test execution performance
+- **Production monitoring** - Continuous performance tracking
+- **Debugging** - Identify memory leaks and CPU spikes
+- **Load testing** - Monitor application behavior under load
+
+## Parameters
+
+| Parameter | Short | Description |
+|-----------|-------|-------------|
+| `<PID>` | - | Process ID to monitor (required) |
+| `--out` | `-o` | Output file path (optional) |
+
+## Usage Examples
+
+### Option 1: Direct via .NET CLI
 
 ```bash
 cd DotNetMetrics.Console
 dotnet run <PID>
 ```
 
-### Opcja 2: Używając skryptów pomocniczych
+### Option 2: Using helper scripts
 
 #### Windows Command Prompt
 
@@ -112,85 +126,99 @@ monitor_process.bat <PID>
 .\monitor_process.ps1 -ProcessId <PID>
 ```
 
-### Przykład
+### Example Commands
 
 ```bash
 dotnet run 1234
-# lub
+# or
 monitor_process.bat 1234
-# lub
+# or
 .\monitor_process.ps1 -ProcessId 1234
 ```
 
-Gdzie `1234` to PID procesu .NET Core, który chcesz monitorować.
+Where `1234` is the PID of the .NET Core process you want to monitor.
 
-### Przykładowe wyjście
+## Stopping Monitoring
 
-```json
-{
-  "timestamp": "2025-08-24T10:30:15.123Z",
-  "processId": 1234,
-  "processName": "MyDotNetApp",
-  "cpuUsagePercent": 15.67,
-  "memoryUsageMB": 256.78,
-  "workingSetMB": 189.45,
-  "privateMemoryMB": 167.89
-}
-```
+Press `Ctrl+C` to stop monitoring.
 
-## Jak znaleźć PID procesu
+## Self-contained Builds
 
-### Windows (PowerShell)
+Pre-built self-contained executables are available for all major platforms:
 
+| Platform | Executable | Size | 
+|----------|------------|------|
+| Windows x64 | `builds/win-x64/DotNetMetrics.Console.exe` | ~12 MB |
+| Windows x86 | `builds/win-x86/DotNetMetrics.Console.exe` | ~11 MB |
+| Windows ARM64 | `builds/win-arm64/DotNetMetrics.Console.exe` | ~12 MB |
+| Linux x64 | `builds/linux-x64/DotNetMetrics.Console` | ~13 MB |
+| Linux ARM64 | `builds/linux-arm64/DotNetMetrics.Console` | ~13 MB |
+| macOS x64 | `builds/osx-x64/DotNetMetrics.Console` | ~13 MB |
+| macOS ARM64 | `builds/osx-arm64/DotNetMetrics.Console` | ~13 MB |
+
+### Building Self-Contained Executables
+
+#### Build for Current Platform (Windows)
 ```powershell
-Get-Process | Where-Object {$_.ProcessName -like "*nazwa_procesu*"}
+.\build-windows.ps1
 ```
 
-### Alternatywnie (Command Prompt)
-
-```cmd
-tasklist | findstr "nazwa_procesu"
+#### Build for All Platforms
+```powershell
+.\build-all-platforms.ps1
 ```
 
-### Task Manager
+#### List Built Executables
+```powershell
+.\list-builds.ps1
+```
 
-1. Otwórz Task Manager (Ctrl+Shift+Esc)
-2. Przejdź do zakładki "Details"
-3. Znajdź swój proces i sprawdź kolumnę "PID"
+See [BUILD.md](BUILD.md) for detailed build instructions.
 
-## Zatrzymywanie monitorowania
+## Requirements
 
-Naciśnij `Ctrl+C` aby zakończyć monitorowanie.
+- .NET 8.0 or higher
+- Appropriate permissions to read process information
 
-## Struktura danych JSON
+## Building from Source
 
-| Pole | Typ | Opis |
-|------|-----|------|
-| `timestamp` | DateTime | Czas pomiaru w UTC |
-| `processId` | int | ID procesu |
-| `processName` | string | Nazwa procesu |
-| `cpuUsagePercent` | double | Użycie CPU w procentach |
-| `memoryUsageMB` | double | Pamięć stronicowana w MB |
-| `workingSetMB` | double | Working Set w MB |
-| `privateMemoryMB` | double | Pamięć prywatna w MB |
+```bash
+git clone https://github.com/jakubkozera/dotnet-metrics.git
+cd dotnet-metrics
+dotnet pack DotNetMetrics.Console --configuration Release
+dotnet tool install --global --add-source ./nupkg DotNetMetrics.Tool
+```
 
-## Rozwiązywanie problemów
+## Troubleshooting
 
-### "Proces o PID X nie został znaleziony"
+### "Process with PID X not found"
 
-- Sprawdź czy proces rzeczywiście istnieje
-- Sprawdź czy PID jest poprawny
+- Check if the process actually exists
+- Verify the PID is correct
 
-### "Nie można uzyskać dostępu do procesu"
+### "Cannot access process"
 
-- Uruchom aplikację jako administrator
-- Sprawdź czy proces nadal działa
+- Run the application as administrator
+- Check if the process is still running
 
-### Wysokie użycie CPU w pierwszym pomiarze
+### High CPU usage in first measurement
 
-- Pierwszy pomiar CPU może być nieprecyzyjny
-- Aplikacja wykonuje pomiar bazowy przed rozpoczęciem właściwego monitorowania
+- The first CPU measurement may be imprecise
+- The application performs baseline measurement before starting actual monitoring
 
-## Licencja
+## Contributing
 
-MIT License
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Author
+
+**Jakub Kozera**
+- GitHub: [@jakubkozera](https://github.com/jakubkozera)
+
+---
+
+⭐ If this tool helps you, please consider giving it a star!
